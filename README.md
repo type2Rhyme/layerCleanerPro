@@ -2,7 +2,7 @@
 
 ## What is this?
 
-Layer Cleaner Pro is not an ad blocker.
+layerCleanerPro is a Chrome extension.
 
 It is not designed to fight websites.
 It is not designed to remove advertising.
