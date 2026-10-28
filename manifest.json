@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+
+  "name": "layerCleanerPro",
+
+  "version": "4.0",
+
+  "description": "A browser extension focused on removing interruptions rather than blocking content.",
+
+  "permissions": [
+    "tabs",
+    "storage",
+    "activeTab"
+  ],
+
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+
+  "icons": {
+    "128": "icon-green.png"
+  },
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon-green.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+
+      "js": [
+        "content.js"
+      ],
+
+      "run_at": "document_end"
+    }
+  ]
+}
