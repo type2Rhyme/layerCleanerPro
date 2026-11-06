@@ -25,43 +25,57 @@ function autoAcceptConsent() {
   }
 
   const consentKeywords = [
-    // English
-    "cookie",
-    "cookies",
-    "consent",
-    "gdpr",
-    "privacy",
-    // Japanese
-    "プライバシー",
-    "クッキー",
-    "同意",
-    // Chinese
-    "隐私",
-    "隱私",
-    "个人信息",
-    "個人資料"
+
+  // English
+
+  "cookie",
+  "cookies",
+  "consent",
+  "gdpr",
+  "privacy",
+
+  // Japanese
+
+  "プライバシー",
+  "クッキー",
+  "同意",
+
+  // Chinese
+
+  "隐私",
+  "隱私", 
+  "个人信息",
+  "個人資料"
+
   ];
 
   const acceptKeywords = [
-    // English
-    "accept",
-    "agree",
-    "allow",
-    "ok",
-    "got it",
-    "i agree",
-    // Japanese
-    "同意",
-    "承諾",
-    "許可",
-    "了解",
-    // Chinese
-    "接受",
-    "允许",
-    "允許",
-    "确认",
-    "確認",
-    "知道了"
+
+  // English
+
+  "accept",
+  "agree",
+  "allow",
+  "ok",
+  "got it",
+  "i agree",
+
+  // Japanese
+
+  "同意",
+  "承諾",
+  "許可",
+  "了解",
+
+  // Chinese
+
+  "接受",
+  "允许",
+  "允許",
+  "确认",
+  "確認",
+  "知道了"
+
   ];
 
   const buttons = document.querySelectorAll(
@@ -69,7 +83,11 @@ function autoAcceptConsent() {
   );
 
   buttons.forEach((button) => {
-    const buttonText = (button.innerText || button.value || "")
+    const buttonText = (
+      button.innerText ||
+      button.value ||
+      ""
+    )
       .trim()
       .toLowerCase();
 
@@ -78,7 +96,8 @@ function autoAcceptConsent() {
     }
 
     const containerText = (
-      button.closest("div,section,article,form")?.innerText || ""
+      button.closest("div,section,article,form")?.innerText ||
+      ""
     )
       .toLowerCase()
       .slice(0, 3000);
@@ -118,12 +137,35 @@ function hideElement(element) {
     return;
   }
 
-  element.style.setProperty("display", "none", "important");
-  element.style.setProperty("visibility", "hidden", "important");
-  element.style.setProperty("opacity", "0", "important");
-  element.style.setProperty("pointer-events", "none", "important");
+  element.style.setProperty(
+    "display",
+    "none",
+    "important"
+  );
 
-  element.setAttribute("data-layer-cleaner", "hidden");
+  element.style.setProperty(
+    "visibility",
+    "hidden",
+    "important"
+  );
+
+  element.style.setProperty(
+    "opacity",
+    "0",
+    "important"
+  );
+
+  element.style.setProperty(
+    "pointer-events",
+    "none",
+    "important"
+  );
+
+  element.setAttribute(
+    "data-layer-cleaner",
+    "hidden"
+  );
+
   notifyIncrement();
 }
 
@@ -132,14 +174,31 @@ function hideElement(element) {
 //
 
 function cleanupScrollLock() {
-  [document.body, document.documentElement].forEach((element) => {
+  [
+    document.body,
+    document.documentElement
+  ].forEach((element) => {
     if (!element) {
       return;
     }
 
-    element.style.setProperty("overflow", "auto", "important");
-    element.style.setProperty("position", "static", "important");
-    element.style.setProperty("touch-action", "auto", "important");
+    element.style.setProperty(
+      "overflow",
+      "auto",
+      "important"
+    );
+
+    element.style.setProperty(
+      "position",
+      "static",
+      "important"
+    );
+
+    element.style.setProperty(
+      "touch-action",
+      "auto",
+      "important"
+    );
 
     element.classList.remove(
       "modal-open",
@@ -156,7 +215,9 @@ function cleanupScrollLock() {
 //
 
 function removeNamedPopups() {
-  document.querySelectorAll("dialog").forEach(hideElement);
+  document
+    .querySelectorAll("dialog")
+    .forEach(hideElement);
 
   const selectors = [
     '[class*="modal" i]',
@@ -172,13 +233,19 @@ function removeNamedPopups() {
   ];
 
   selectors.forEach((selector) => {
-    document.querySelectorAll(selector).forEach((element) => {
-      if (element.closest("header, nav, footer")) {
-        return;
-      }
+    document
+      .querySelectorAll(selector)
+      .forEach((element) => {
+        if (
+          element.closest(
+            "header, nav, footer"
+          )
+        ) {
+          return;
+        }
 
-      hideElement(element);
-    });
+        hideElement(element);
+      });
   });
 }
 
@@ -192,34 +259,61 @@ function removeLargeOverlays() {
   const screenArea = screenWidth * screenHeight;
 
   document
-    .querySelectorAll("div, section, aside, article")
+    .querySelectorAll(
+      "div, section, aside, article"
+    )
     .forEach((element) => {
-      if (element.closest("header, nav, footer")) {
+      if (
+        element.closest(
+          "header, nav, footer"
+        )
+      ) {
         return;
       }
 
-      const style = getComputedStyle(element);
-      const position = style.position;
+      const style =
+        getComputedStyle(element);
 
-      if (position !== "fixed" && position !== "absolute") {
+      const position =
+        style.position;
+
+      if (
+        position !== "fixed" &&
+        position !== "absolute"
+      ) {
         return;
       }
 
-      const zIndex = parseInt(style.zIndex, 10);
+      const zIndex = parseInt(
+        style.zIndex,
+        10
+      );
 
-      if (Number.isNaN(zIndex) || zIndex < 10) {
+      if (
+        Number.isNaN(zIndex) ||
+        zIndex < 10
+      ) {
         return;
       }
 
-      const rect = element.getBoundingClientRect();
-      const elementArea = rect.width * rect.height;
+      const rect =
+        element.getBoundingClientRect();
 
-      const isLargeOverlay = elementArea > screenArea * 0.3;
+      const elementArea =
+        rect.width * rect.height;
+
+      const isLargeOverlay =
+        elementArea >
+        screenArea * 0.30;
+
       const isFullScreenOverlay =
-        rect.width >= screenWidth * 0.8 &&
-        rect.height >= screenHeight * 0.8;
+        rect.width >= screenWidth * 0.80 &&
+        rect.height >= screenHeight * 0.80;
 
-      if (isLargeOverlay || isFullScreenOverlay) {
+      if (
+        isLargeOverlay ||
+        isFullScreenOverlay
+      ) {
         hideElement(element);
       }
     });
@@ -230,28 +324,40 @@ function removeLargeOverlays() {
 //
 
 function removeBackdrops() {
-  document.querySelectorAll("div").forEach((element) => {
-    const style = getComputedStyle(element);
+  document
+    .querySelectorAll("div")
+    .forEach((element) => {
+      const style =
+        getComputedStyle(element);
 
-    if (style.position !== "fixed") {
-      return;
-    }
+      if (
+        style.position !== "fixed"
+      ) {
+        return;
+      }
 
-    const rect = element.getBoundingClientRect();
-    const coversScreen =
-      rect.width >= window.innerWidth * 0.9 &&
-      rect.height >= window.innerHeight * 0.9;
+      const rect =
+        element.getBoundingClientRect();
 
-    if (!coversScreen) {
-      return;
-    }
+      const coversScreen =
+        rect.width >=
+          window.innerWidth * 0.90 &&
+        rect.height >=
+          window.innerHeight * 0.90;
 
-    const backgroundColor = style.backgroundColor.toLowerCase();
+      if (!coversScreen) {
+        return;
+      }
 
-    if (backgroundColor.includes("rgb")) {
-      hideElement(element);
-    }
-  });
+      const backgroundColor =
+        style.backgroundColor.toLowerCase();
+
+      if (
+        backgroundColor.includes("rgb")
+      ) {
+        hideElement(element);
+      }
+    });
 }
 
 //
@@ -260,10 +366,15 @@ function removeBackdrops() {
 
 function purgeRestoredElements() {
   document
-    .querySelectorAll('[data-layer-cleaner="hidden"]')
+    .querySelectorAll(
+      '[data-layer-cleaner="hidden"]'
+    )
     .forEach((element) => {
       try {
-        if (getComputedStyle(element).display !== "none") {
+        if (
+          getComputedStyle(element)
+            .display !== "none"
+        ) {
           element.remove();
         }
       } catch (error) {}
@@ -288,13 +399,19 @@ function cleanLayers() {
 //
 
 async function initialize() {
-  const currentDomain = location.hostname;
+  const currentDomain =
+    location.hostname;
 
-  const data = await chrome.storage.local.get({
-    layerBlockedDomains: []
-  });
+  const data =
+    await chrome.storage.local.get({
+      layerBlockedDomains: []
+    });
 
-  if (!data.layerBlockedDomains.includes(currentDomain)) {
+  if (
+    !data.layerBlockedDomains.includes(
+      currentDomain
+    )
+  ) {
     return;
   }
 
@@ -302,21 +419,33 @@ async function initialize() {
 
   let timer = null;
 
-  const observer = new MutationObserver(() => {
-    clearTimeout(timer);
-    timer = setTimeout(cleanLayers, 300);
-  });
+  const observer =
+    new MutationObserver(() => {
+      clearTimeout(timer);
+
+      timer = setTimeout(
+        cleanLayers,
+        300
+      );
+    });
 
   function startObserver() {
     if (!document.body) {
-      setTimeout(startObserver, 100);
+      setTimeout(
+        startObserver,
+        100
+      );
+
       return;
     }
 
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+    observer.observe(
+      document.body,
+      {
+        childList: true,
+        subtree: true
+      }
+    );
   }
 
   startObserver();
