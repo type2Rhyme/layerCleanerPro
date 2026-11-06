@@ -6,6 +6,12 @@
 //
 
 //
+// Tab-Specific Counter Management
+//
+
+const tabCounts = {};
+
+//
 // Badge & Counter Setup
 //
 
@@ -15,17 +21,23 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 //
-// Counter & Badge Update Logic
+// Increment Counter for Specific Tab
 //
 
-async function incrementBlockCount() {
-  const data = await chrome.storage.local.get({ blockCount: 0 });
-  const newCount = data.blockCount + 1;
+function incrementTabCounter(tabId) {
+  if (!tabId) {
+    return;
+  }
 
-  await chrome.storage.local.set({ blockCount: newCount });
+  const currentCount = (tabCounts[tabId] || 0) + 1;
+  tabCounts[tabId] = currentCount;
 
-  const badgeText = newCount > 999 ? "999+" : String(newCount);
-  chrome.action.setBadgeText({ text: badgeText });
+  const badgeText = currentCount > 999 ? "999+" : String(currentCount);
+
+  chrome.action.setBadgeText({
+    tabId: tabId,
+    text: badgeText
+  });
 }
 
 //
@@ -96,9 +108,9 @@ function updateIcon(tabId, urlString) {
 // Message Listening for Counter
 //
 
-chrome.runtime.onMessage.addListener((message) => {
-  if (message.type === "INCREMENT_COUNTER") {
-    incrementBlockCount();
+chrome.runtime.onMessage.addListener((message, sender) => {
+  if (message.type === "INCREMENT_COUNTER" && sender.tab && sender.tab.id) {
+    incrementTabCounter(sender.tab.id);
   }
 });
 
@@ -108,6 +120,15 @@ chrome.runtime.onMessage.addListener((message) => {
 
 chrome.tabs.onCreated.addListener((newTab) => {
   if (!newTab.openerTabId) {
+    return;
+  }
+
+  // 1. 手動で開いた新規タブ（新規タブページや空ページ）はブロック対象から外す
+  const pendingUrl = newTab.pendingUrl || newTab.url || "";
+  if (
+    pendingUrl.startsWith("chrome://") ||
+    pendingUrl === "about:blank"
+  ) {
     return;
   }
 
@@ -140,7 +161,10 @@ chrome.tabs.onCreated.addListener((newTab) => {
           if (shouldClose && newTab.id) {
             chrome.tabs.remove(newTab.id, () => {
               void chrome.runtime.lastError;
-              incrementBlockCount();
+
+              if (parentTab.id) {
+                incrementTabCounter(parentTab.id);
+              }
             });
           }
         }
@@ -168,6 +192,14 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 //
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === "loading") {
+    tabCounts[tabId] = 0;
+    chrome.action.setBadgeText({
+      tabId: tabId,
+      text: ""
+    });
+  }
+
   if (changeInfo.status !== "complete" || !tab || !tab.url) {
     return;
   }
@@ -176,7 +208,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 //
-// Tab Removal Events
+// Tab Cleanup
 //
 
-chrome.tabs.onRemoved.addListener(() => {});
+chrome.tabs.onRemoved.addListener((tabId) => {
+  delete tabCounts[tabId];
+});
