@@ -250,17 +250,17 @@ function removeNamedPopups() {
 }
 
 //
-// Large Overlay Detection
+// Centered & Large Overlay Detection
 //
 
-function removeLargeOverlays() {
+function removeCenteredOverlays() {
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
   const screenArea = screenWidth * screenHeight;
 
   document
     .querySelectorAll(
-      "div, section, aside, article"
+      "div, section, aside, article, iframe"
     )
     .forEach((element) => {
       if (
@@ -299,6 +299,13 @@ function removeLargeOverlays() {
       const rect =
         element.getBoundingClientRect();
 
+      if (
+        rect.width < 20 ||
+        rect.height < 20
+      ) {
+        return;
+      }
+
       const elementArea =
         rect.width * rect.height;
 
@@ -306,13 +313,22 @@ function removeLargeOverlays() {
         elementArea >
         screenArea * 0.30;
 
-      const isFullScreenOverlay =
-        rect.width >= screenWidth * 0.80 &&
-        rect.height >= screenHeight * 0.80;
+      // Check if the element's center sits near the middle of the viewport
+      const centerX =
+        rect.left + rect.width / 2;
+
+      const centerY =
+        rect.top + rect.height / 2;
+
+      const isNearCenter =
+        centerX >= screenWidth * 0.25 &&
+        centerX <= screenWidth * 0.75 &&
+        centerY >= screenHeight * 0.25 &&
+        centerY <= screenHeight * 0.75;
 
       if (
         isLargeOverlay ||
-        isFullScreenOverlay
+        isNearCenter
       ) {
         hideElement(element);
       }
@@ -388,7 +404,7 @@ function purgeRestoredElements() {
 function cleanLayers() {
   autoAcceptConsent();
   removeNamedPopups();
-  removeLargeOverlays();
+  removeCenteredOverlays();
   removeBackdrops();
   cleanupScrollLock();
   purgeRestoredElements();
